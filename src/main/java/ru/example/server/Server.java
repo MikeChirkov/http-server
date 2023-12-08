@@ -1,13 +1,9 @@
 package ru.example.server;
 
-import ru.example.server.ConnectListener;
-import ru.example.server.Handler;
-
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -18,12 +14,11 @@ public class Server {
     public void listen(int port) {
         try (final var serverSocket = new ServerSocket(port)) {
             while (true) {
-                try (
-                        final var socket = serverSocket.accept()
-                ) {
-                    var connectListener = new ConnectListener(socket, handlers);
-                    pool.submit(connectListener).get();
-                } catch (ExecutionException | InterruptedException e) {
+                try {
+                    var socket = serverSocket.accept();
+                    var connectHandler = new ConnectHandler(socket, handlers);
+                    pool.execute(connectHandler::handle);
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
