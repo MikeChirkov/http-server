@@ -17,7 +17,6 @@ public class Main {
 
     public static void main(String[] args) {
         var server = new Server();
-
         for (String validPath : validPaths) {
             server.addHandler("GET", validPath, (request, responseStream) -> {
                 try {
